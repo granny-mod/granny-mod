@@ -18,12 +18,18 @@ jobs:
       - name: Unzip Project & Build
         run: |
           unzip Android-Mod-Menu-5.0.zip
-          cd Android-Mod-Menu-5.0/app/src/main
+          PROJECT_DIR=$(find . -maxdepth 2 -type f -name "Android.mk" | head -n 1 | xargs dirname | xargs dirname)
+          cd "$PROJECT_DIR"
           $ANDROID_HOME/ndk/25.2.9519653/ndk-build
+
+      - name: Locate and Prepare Output
+        run: |
+          mkdir -p output_lib
+          find . -name "*.so" -exec cp {} output_lib/ \;
 
       - name: Upload Compiled .so Library
         uses: actions/upload-artifact@v4
         with:
           name: libMyModMenu-arm64
-          path: Android-Mod-Menu-5.0/app/src/main/libs/arm64-v8a/libMyModMenu.so
+          path: output_lib/
           
