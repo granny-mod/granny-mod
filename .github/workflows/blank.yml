@@ -1,0 +1,30 @@
+name: Build Mod Menu ARM64
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Setup Android NDK
+        uses: nspacestudio/setup-ndk@v1.2.0
+        with:
+          ndk-version: r25c
+
+      - name: Unzip Project & Build
+        run: |
+          unzip Android-Mod-Menu-5.0.zip
+          cd Android-Mod-Menu-5.0/app/src/main
+          $ANDROID_NDK_HOME/ndk-build
+
+      - name: Upload Compiled .so Library
+        uses: actions/upload-artifact@v4
+        with:
+          name: libMyModMenu-arm64
+          path: Android-Mod-Menu-5.0/app/src/main/libs/arm64-v8a/libMyModMenu.so
+          
