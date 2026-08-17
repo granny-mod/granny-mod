@@ -15,20 +15,23 @@ jobs:
         run: |
           sudo $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --install "ndk;25.2.9519653"
 
-      - name: Unzip Project & Build
+      - name: Unzip Project
         run: |
-          unzip Android-Mod-Menu-5.0.zip
-          PROJECT_DIR=$(find . -maxdepth 2 -type f -name "Android.mk" | head -n 1 | xargs dirname | xargs dirname)
-          cd "$PROJECT_DIR"
+          unzip -o Android-Mod-Menu-5.0.zip
+
+      - name: Compile Library
+        run: |
+          BUILD_DIR=$(find . -name "Android.mk" -exec dirname {} \;)
+          cd "$BUILD_DIR"
           $ANDROID_HOME/ndk/25.2.9519653/ndk-build
 
-      - name: Locate and Prepare Output
+      - name: Collect Output
         run: |
-          mkdir -p output_lib
-          find . -name "*.so" -exec cp {} output_lib/ \;
+          mkdir -p output
+          find . -name "*.so" -exec cp {} output/ \;
 
       - name: Upload Compiled .so Library
         uses: actions/upload-artifact@v4
         with:
           name: libMyModMenu-arm64
-          path: output_lib/
+          path: output/
